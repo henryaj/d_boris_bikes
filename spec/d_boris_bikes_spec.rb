@@ -5,6 +5,7 @@ require 'Timecop'
 describe Bike do
 
 	let(:bike) { Bike.new }
+	let(:csv_file) { CSV.read("./lib/bikes.csv") }
 
 	it "should have a serial number when created" do
 		expect(bike.serial).not_to be nil
@@ -83,14 +84,27 @@ describe Bike do
 	end
 
 	it "should, on initialization, write its attributes to a CSV" do
+		wipe_csv
 		bike1 = Bike.new
-		file = CSV.read("./lib/bikes.csv")
-		expect(file.last).to include(bike1.serial)
+		expect(csv_file.last).to include(bike1.serial)
 	end
+
 	it "writes all attributes for a bike to a CSV row" do 
+		wipe_csv
 		bike1 = Bike.new
-		file = CSV.read("./lib/bikes.csv")
-		expect(file.last).to eq [bike1.serial,"#{bike1.broken?}","#{bike1.rented?}"]
+		expect(csv_file.last).to eq [bike1.serial,"#{bike1.broken?}","#{bike1.rented?}"]
+	end
+
+	it "should only appear in the CSV file once" do
+		wipe_csv		
+		bike1 = Bike.new
+		bike1.break!
+		bike1.write_details_to_csv
+		expect(csv_file.flatten.count(bike1.serial)).to eq 1
+	end
+
+	def wipe_csv
+		File.open("./lib/bikes.csv", 'w') {|file| file.truncate(0) }
 	end
 
 end

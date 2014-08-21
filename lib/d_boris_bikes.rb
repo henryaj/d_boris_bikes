@@ -19,10 +19,23 @@ class Bike
 	end
 
 	def write_details_to_csv
+		CSV.foreach("./lib/bikes.csv") do |row|
+			if row[0] = @serial 
+				row =	[@serial,broken?,rented?]
+				return true
+			end
+		end 
 		CSV.open("./lib/bikes.csv","a") do |csv|
 			csv << [@serial,broken?,rented?]
-		end 
+		end
+
 	end	
+
+	def check_uniqueness
+		file = CSV.read("./lib/bikes.csv")
+		file.flatten.count(serial) == 0 
+	end
+
 	def broken?
 		@broken
 	end
