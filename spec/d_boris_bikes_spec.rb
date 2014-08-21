@@ -1,5 +1,6 @@
 require 'csv'
 require 'd_boris_bikes'
+require 'spec_helper'
 require 'Timecop'
 
 describe Bike do
@@ -82,6 +83,10 @@ describe Bike do
 		Timecop.travel(1801)
 		expect{ bike.return! }.to raise_error(BikeGoneTooLongError, "You took the bike out for more than half an hour!")
 	end
+	
+	def wipe_csv
+		File.open("./lib/bikes.csv", 'w') {|file| file.truncate(0) }
+	end
 
 	it "should, on initialization, write its attributes to a CSV" do
 		wipe_csv
@@ -103,9 +108,16 @@ describe Bike do
 		expect(csv_file.flatten.count(bike1.serial)).to eq 1
 	end
 
-	def wipe_csv
-		File.open("./lib/bikes.csv", 'w') {|file| file.truncate(0) }
+	it "should persist in the CSV file even after another bike is added" do
+		wipe_csv
+		bike1 = Bike.new
+		bike2 = Bike.new
+		puts bike1.serial
+		puts bike2.serial
+		expect(csv_file.flatten.count(bike1.serial)).to eq 1
+		expect(csv_file.flatten.count(bike2.serial)).to eq 1
 	end
+
 
 end
 

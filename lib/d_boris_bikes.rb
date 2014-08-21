@@ -19,13 +19,16 @@ class Bike
 	end
 
 	def write_details_to_csv
+		puts "write_details_to_csv is being called"
 		CSV.foreach("./lib/bikes.csv") do |row|
-			if row[0] = @serial 
+			if row[0] == @serial 
+				puts "MAtch found row being replaced"
 				row =	[@serial,broken?,rented?]
 				return true
 			end
 		end 
 		CSV.open("./lib/bikes.csv","a") do |csv|
+			puts "MAtch not found row being appended"
 			csv << [@serial,broken?,rented?]
 		end
 
