@@ -15,12 +15,12 @@ class Bike
 		@broken = false
 		@rented = false
 		@serial = (1..9).inject(""){ |memo| memo += rand(9).to_s } 
-		write_serial_to_csv		
+		write_details_to_csv		
 	end
 
-	def write_serial_to_csv
+	def write_details_to_csv
 		CSV.open("./lib/bikes.csv","a") do |csv|
-			csv << [@serial]
+			csv << [@serial,broken?,rented?]
 		end 
 	end	
 	def broken?

@@ -85,12 +85,12 @@ describe Bike do
 	it "should, on initialization, write its attributes to a CSV" do
 		bike1 = Bike.new
 		file = CSV.read("./lib/bikes.csv")
-		expect(file).to include([bike1.serial])
+		expect(file.last).to include(bike1.serial)
 	end
 	it "writes all attributes for a bike to a CSV row" do 
 		bike1 = Bike.new
 		file = CSV.read("./lib/bikes.csv")
-		expect(file.last).to eq [bike1.serial,bike1.broken?,bike1.rented?]
+		expect(file.last).to eq [bike1.serial,"#{bike1.broken?}","#{bike1.rented?}"]
 	end
 
 end
