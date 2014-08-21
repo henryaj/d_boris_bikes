@@ -9,34 +9,47 @@ end
 
 class Bike
 
-	attr_reader :serial, :checkout_time, :checkin_time
+	BIKE_LOG_CSV = "./lib/bikes.csv"
+
+	attr_reader :serial, :checkout_time, :checkin_time, :location
 
 	def initialize
 		@broken = false
 		@rented = false
 		@serial = (1..9).inject(""){ |memo| memo += rand(9).to_s } 
+		@location = "detached"
 		write_details_to_csv		
 	end
 
+	# def write_details_to_csv
+	# 	CSV.foreach("./lib/bikes.csv") do |row|
+	# 		if row[0] == @serial 
+	# 			row =	[@serial,broken?,rented?,location]
+	# 			return true
+	# 		end
+	# 	end 
+	# 	CSV.open("./lib/bikes.csv","a") do |csv|
+	# 		csv << [@serial,broken?,rented?,location]
+	# 	end
+	# end	
+
 	def write_details_to_csv
-		puts "write_details_to_csv is being called"
-		CSV.foreach("./lib/bikes.csv") do |row|
-			if row[0] == @serial 
-				puts "MAtch found row being replaced"
-				row =	[@serial,broken?,rented?]
-				return true
-			end
-		end 
-		CSV.open("./lib/bikes.csv","a") do |csv|
-			puts "MAtch not found row being appended"
-			csv << [@serial,broken?,rented?]
+		append_status_to_csv unless update_status_in_csv			
+	end
+
+	def append_status_to_csv			
+		CSV.open(BIKE_LOG_CSV,"a") do |csv|
+			csv << update_bike_data
 		end
+	end
 
-	end	
 
-	def check_uniqueness
-		file = CSV.read("./lib/bikes.csv")
-		file.flatten.count(serial) == 0 
+	def update_status_in_csv
+		CSV.foreach(BIKE_LOG_CSV) { |row| return update_bike_data(row) if row.include? @serial }; nil
+	end
+
+	def update_bike_data(row = 0 )
+		row = [@serial,broken?,rented?,location]
 	end
 
 	def broken?
